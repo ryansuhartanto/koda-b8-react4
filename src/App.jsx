@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import React from "react";
 
 // oxlint-disable-next-line no-unassigned-import
 import "#/style.css";
@@ -34,10 +34,38 @@ async function getData() {
 	return data;
 }
 
-export default function Layout() {
+/**
+ * @param {object}
+ * @param {string} .name
+ * @param {string} .username
+ * @param {string} .email
+ */
+function UserCard({ name, username, email }) {
 	return (
-		<>
-			<Outlet />
-		</>
+		<div className="flex flex-col gap-2 p-4 rounded-md bg-white">
+			<h2 className="font-bold">{name}</h2>
+			<div>{username}</div>
+			<div>{email}</div>
+		</div>
+	);
+}
+
+export default function Layout() {
+	const [data, setData] = React.useState([]);
+	React.useEffect(() => {
+		(async () => {
+			const data = await getData();
+			setData(data);
+		})();
+	}, [setData]);
+
+	return (
+		<div className="min-h-screen bg-gray-100">
+			<div className="max-w-3xl mx-auto grid grid-cols-2 gap-4">
+				{data.map((user) => (
+					<UserCard {...user} />
+				))}
+			</div>
+		</div>
 	);
 }
