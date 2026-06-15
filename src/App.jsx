@@ -4,7 +4,7 @@ import React from "react";
 import "#/style.css";
 
 /**
- * @typedef Users
+ * @typedef User
  * @prop {number} id
  * @prop {string} name
  * @prop {string} username
@@ -26,7 +26,7 @@ import "#/style.css";
  */
 
 /**
- * @returns {Promise<Users[]>}
+ * @returns {Promise<User[]>}
  */
 async function getData() {
 	const req = await fetch("https://jsonplaceholder.typicode.com/users");
@@ -35,10 +35,15 @@ async function getData() {
 }
 
 /**
- * @param {object}
- * @param {string} .name
- * @param {string} .username
- * @param {string} .email
+ * @typedef {object} UserCardProps
+ * @prop {string} name
+ * @prop {string} username
+ * @prop {string} email
+ */
+
+/**
+ * @param {UserCardProps}
+ * @returns
  */
 function UserCard({ name, username, email }) {
 	return (
@@ -50,15 +55,17 @@ function UserCard({ name, username, email }) {
 	);
 }
 
-export default function Layout() {
-	const [data, setData] = React.useState([]);
-	React.useEffect(() => {
-		(async () => {
-			const data = await getData();
-			setData(data);
-		})();
-	}, [setData]);
+/**
+ * @typedef {Object} UsersProps
+ * @prop {User[]} users
+ * @prop {string} filter-name
+ * @prop {React.ComponentProps<"input">["onChange"]} onChange
+ */
 
+/**
+ * @param {UsersProps}
+ */
+function Users({ users, "filter-name": filterName, onChange }) {
 	return (
 		<div className="min-h-screen bg-gray-100">
 			<nav className="sticky inset-bs-0 py-4">
@@ -68,15 +75,45 @@ export default function Layout() {
 						type="text"
 						placeholder="Search user..."
 						className="bg-white p-2 px-4"
+						value={filterName}
+						onChange={onChange}
 					/>
 				</div>
 			</nav>
 
 			<div className="max-w-3xl mx-auto px-4 grid grid-cols-2 gap-4">
-				{data.map((user) => (
-					<UserCard {...user} />
+				{users.map(({ id, ...user }) => (
+					<UserCard
+						key={id}
+						{...user}
+					/>
 				))}
 			</div>
 		</div>
+	);
+}
+
+export default function Layout() {
+	const [users, setUsers] = React.useState([]);
+	React.useEffect(() => {
+		(async () => {
+			const data = await getData();
+			setUsers(data);
+		})();
+	}, []);
+
+	const [filterName, setFilterName] = React.useState("");
+	const filteredUser = users.filter((user) =>
+		user.name.toLowerCase().includes(filterName.toLowerCase()),
+	);
+
+	return (
+		<Users
+			users={filteredUser}
+			filter-name={filterName}
+			onChange={(e) => {
+				setFilterName(e.target.value);
+			}}
+		/>
 	);
 }
