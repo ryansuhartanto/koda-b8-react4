@@ -42,7 +42,7 @@ async function getData() {
  */
 function UserCard({ name, username, email }) {
 	return (
-		<div className="flex flex-col gap-2 p-4 rounded-md bg-white">
+		<div className="flex flex-col gap-2 p-4 px-6 rounded-md bg-white">
 			<h2 className="font-bold">{name}</h2>
 			<div>{username}</div>
 			<div>{email}</div>
@@ -61,7 +61,18 @@ export default function Layout() {
 
 	return (
 		<div className="min-h-screen bg-gray-100">
-			<div className="max-w-3xl mx-auto grid grid-cols-2 gap-4">
+			<nav className="sticky inset-bs-0 py-4">
+				<div className="max-w-3xl mx-auto p-4 flex flex-col gap-4 bg-blue-200 rounded-xl">
+					<h1 className="font-bold text-2xl text-center">Contact List</h1>
+					<input
+						type="text"
+						placeholder="Search user..."
+						className="bg-white p-2 px-4"
+					/>
+				</div>
+			</nav>
+
+			<div className="max-w-3xl mx-auto px-4 grid grid-cols-2 gap-4">
 				{data.map((user) => (
 					<UserCard {...user} />
 				))}
